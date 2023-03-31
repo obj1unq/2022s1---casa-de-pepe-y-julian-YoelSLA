@@ -1,0 +1,72 @@
+import casa.*
+
+test "001 - Cuando se deposita 100 pesos a una cuenta corriente, su saldo es de 100 pesos" {
+	// SetUp
+	assert.equals(0, cuentaCorriente.saldo())
+	// Exercise
+	cuentaCorriente.depositar(100)
+	// Assert
+	assert.equals(100, cuentaCorriente.saldo())
+}
+
+test "002 - Cuando se extrae 100 pesos de una cuenta corriente, su saldo es de 0 pesos" {
+	// SetUp
+	cuentaCorriente.depositar(100)
+	// Exercise
+	cuentaCorriente.extraer(100)
+	// Assert
+	assert.equals(0, cuentaCorriente.saldo())
+}
+
+test "003 - Cuando se deposita 1000 pesos a una cuenta con gastos, su saldo es de 980 pesos" {
+	// SetUp
+	assert.equals(0, cuentaConGastos.saldo())
+	// Exercise
+	cuentaConGastos.depositar(1000)
+	// Assert
+	assert.equals(980, cuentaConGastos.saldo())
+}
+
+test "004 - Cuando se extrae 980 pesos a una cuenta con gastos, su saldo es de 0 pesos" {
+	// SetUp
+	cuentaConGastos.depositar(1000)
+	// Exercise
+	cuentaConGastos.extraer(980)
+	// Assert
+	assert.equals(0, cuentaConGastos.saldo())
+}
+
+test "005 - Cuando se deposita 100 pesos en la cuenta combinada, el saldo de la cuenta primaria(cuenta con gastos) es de 50 pesos" {
+	// SetUp
+	cuentaConGastos.costoPorOperacion(50)
+	assert.equals(0, cuentaCombinada.saldo())
+	// Exercise 
+	cuentaCombinada.depositar(100)
+	// Assert
+	assert.equals(50, cuentaConGastos.saldo())
+}
+
+test "006 - Cuando se extrae 200 pesos de la cuenta combinada y no hay suficiente saldo en la primaria, 
+			el saldo de la cuenta secundaria(cuenta corriente) es de 300 pesos. " {
+	// SetUp
+	assert.equals(0, cuentaCombinada.saldo())
+	cuentaCorriente.depositar(500)
+	cuentaConGastos.costoPorOperacion(50)
+	cuentaCombinada.depositar(100)
+	// Exercise
+	cuentaCombinada.extraer(200)
+	// Assert
+	assert.equals(300, cuentaCorriente.saldo())
+}
+
+test "007 - Cuando se depositan 100 pesos a la cuenta combinada y se extraen 200 pesos de la misma, 
+			el saldo de la cuenta es de 350 pesos" {
+	// SetUp
+	assert.equals(0, cuentaCombinada.saldo())
+	cuentaCorriente.depositar(500)
+	cuentaConGastos.costoPorOperacion(50)
+	cuentaCombinada.depositar(100)
+	cuentaCombinada.extraer(200)
+	// Assert
+	assert.equals(350, cuentaCombinada.saldo())
+}
