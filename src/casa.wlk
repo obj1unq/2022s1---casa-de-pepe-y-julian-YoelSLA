@@ -54,14 +54,14 @@ object cuentaCombinada {
 
 	method saldo() = cuentaConGastos.saldo() + cuentaCorriente.saldo()
 
-	method depositar(cantidad) {
-		cuentaConGastos.depositar(cantidad)
-	}
-
 	method extraer(cantidad) {
 		if (cuentaConGastos.saldo() <= cantidad) {
 			cuentaCorriente.extraer(cantidad)
 		} else cuentaConGastos.extraer(cantidad)
+	}
+
+	method depositar(cantidad) {
+		cuentaConGastos.depositar(cantidad)
 	}
 
 }

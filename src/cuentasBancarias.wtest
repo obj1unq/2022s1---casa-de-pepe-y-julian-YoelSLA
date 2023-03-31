@@ -55,7 +55,7 @@ test "006 - Cuando se extrae 200 pesos de la cuenta combinada y no hay suficient
 	cuentaCombinada.depositar(100)
 	// Exercise
 	cuentaCombinada.extraer(200)
-	// Assert
+	// Assert 
 	assert.equals(300, cuentaCorriente.saldo())
 }
 

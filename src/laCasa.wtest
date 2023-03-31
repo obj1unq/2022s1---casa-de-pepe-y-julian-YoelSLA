@@ -31,3 +31,7 @@ test "004 - Cuando se rompe algo de valor 1000 en la casa, está  no se está en
 	// Assert
 	assert.notThat(casaDePepeYJulian.estaEnOrden())
 }
+
+test "005" {
+	assert.that(true)
+}
