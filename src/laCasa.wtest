@@ -1,37 +1,60 @@
 import casa.*
 
-test "001 - Cuando se rompe algo de valor 1000 en la casa, aumenta el monto de reparación " {
-	// SetUo
-	assert.equals(0, casaDePepeYJulian.montoDeReparacion())
-	// Exercise
-	casaDePepeYJulian.romperAlgoDeValor(1000)
-	// Assert
-	assert.equals(1000, casaDePepeYJulian.montoDeReparacion())
+describe "laCasa" {
+
+	method initialize() {
+		casaDePepeYJulian.montoReparacion(0)
+	}
+
+	test "01 - Cuando se rompe algo de 1000 pesos en la casa, 
+			aumenta el monto de reparación." {
+		// SetUp
+		casaDePepeYJulian.montoReparacion(0)
+		// Exercise
+		casaDePepeYJulian.romperAlgoDe(1000)
+		// Assert
+		assert.equals(1000, casaDePepeYJulian.montoReparacion())
+	}
+
+	test "02 - Cuando se rompe algo de 1000 pesos en la casa,
+			la misma tiene víveres suficientes (más del 40%)" {
+		// SetUp
+		casaDePepeYJulian.montoReparacion(0)
+		// Excerise
+		casaDePepeYJulian.romperAlgoDe(1000)
+		// Assert
+		assert.that(casaDePepeYJulian.tieneViveresSuficientes())
+	}
+
+	test "03 - Cuando se rompe algo de 1000 pesos en la casa,
+			se debe hacer reparaciones en la misma." {
+		// SetUp
+		casaDePepeYJulian.montoReparacion(0)
+		// Exercise
+		casaDePepeYJulian.romperAlgoDe(1000)
+		// Assert
+		assert.that(casaDePepeYJulian.hayQueHacerReparaciones())
+	}
+
+	test "04 - Cuando se rompe algo de 1000 pesos en la casa,
+			la misma no está en orden." {
+		// SetUp
+		casaDePepeYJulian.montoReparacion(0)
+		// Exercise
+		casaDePepeYJulian.romperAlgoDe(1000)
+		// Assert
+		assert.notThat(casaDePepeYJulian.estaEnOrden())
+	}
+
+	test "05 - Cuando se rompe algo de 1000 pesos en la casa,
+			la misma no tiene víveres suficientes (más del 40%)." {
+		// SetUp
+		casaDePepeYJulian.porcentajeViveres(10)
+		// Excerise
+		casaDePepeYJulian.romperAlgoDe(1000)
+		// Assert
+		assert.notThat(casaDePepeYJulian.tieneViveresSuficientes())
+	}
+
 }
 
-test "002 - Cuando se rompe algo de valor 1000 en la casa, se debe hacer repaciones en la misma" {
-	// SetUp
-	assert.equals(false, casaDePepeYJulian.hayReparacionesPorHacer())
-	// Exercise
-	casaDePepeYJulian.romperAlgoDeValor(1000)
-	// Assert
-	assert.equals(true, casaDePepeYJulian.hayReparacionesPorHacer())
-}
-
-test "003 - Cuando se rompe algo de valor 1000 en la casa, la misma tiene viveres suficientes al 40%" {
-	// Exercise 
-	casaDePepeYJulian.romperAlgoDeValor(1000)
-	// Assert
-	assert.equals(true, casaDePepeYJulian.hayViveresSuficientes())
-}
-
-test "004 - Cuando se rompe algo de valor 1000 en la casa, está  no se está en orden" {
-	// Exercise
-	casaDePepeYJulian.romperAlgoDeValor(1000)
-	// Assert
-	assert.notThat(casaDePepeYJulian.estaEnOrden())
-}
-
-test "005" {
-	assert.that(true)
-}

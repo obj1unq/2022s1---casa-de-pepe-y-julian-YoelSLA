@@ -1,0 +1,60 @@
+import casa.*
+
+describe "manteniendoLaCasa" {
+
+	method initialize() {
+		casaDePepeYJulian.estrategia(indispensable)
+	}
+
+	test "01- Cuando la casa no tiene suficientes viveres (40%), usan la estrategia indispensable donde comprar viveres con una
+				calidad de 2 para que alcance." {
+		// SetUp
+		casaDePepeYJulian.porcentajeViveres(10)
+		indispensable.calidad(2)
+		// Exercise
+		casaDePepeYJulian.comprarViveres()
+		// Asssert
+		assert.that(casaDePepeYJulian.tieneViveresSuficientes())
+	}
+
+	test "02 - Cuando la casa está en orden, usan la estrategia full, y la misma tiene el 100% de los víveres.." {
+		// SetUp
+		casaDePepeYJulian.estrategia(full)
+		casaDePepeYJulian.montoReparacion(0)
+		// Exercise
+		casaDePepeYJulian.comprarViveres()
+		// Assert
+		assert.that(casaDePepeYJulian.estaEnOrden())
+		assert.equals(100, casaDePepeYJulian.porcentajeViveres())
+	}
+
+	test "03 - Cuando la casa no está en orden, usan la estrategia full, donde aumenta un 40% de los viveres con una calidad
+				siempre de 5" {
+		// SetUp
+		casaDePepeYJulian.porcentajeViveres(10)
+		casaDePepeYJulian.estrategia(full)
+		casaDePepeYJulian.romperAlgoDe(500)
+		// Exercise
+		casaDePepeYJulian.comprarViveres()
+		// Assert
+		assert.notThat(casaDePepeYJulian.estaEnOrden())
+		assert.equals(50, casaDePepeYJulian.porcentajeViveres())
+	}
+
+	test "04 - Mantenimiento de casa" {
+		// SetUp
+		casaDePepeYJulian.porcentajeViveres(50)
+		casaDePepeYJulian.montoReparacion(100)
+		casaDePepeYJulian.cuentaAsignada(cuentaCorriente)
+		cuentaCorriente.depositar(1000)
+		casaDePepeYJulian.estrategia(full)
+		// Exercise
+		casaDePepeYJulian.mantenerCasa()
+		// Assert
+		assert.equals(90, casaDePepeYJulian.porcentajeViveres())
+		assert.equals(800, cuentaCorriente.saldo())
+		assert.equals(100, casaDePepeYJulian.montoReparacion())
+	}
+
+}
+
