@@ -1,34 +1,46 @@
 object casaDePepeYJulian {
 
-	var property montoReparacion = 0
 	var property porcentajeViveres = 50
-	var property estrategia
-	var property cuentaAsignada
+	var property montoReparaciones = 0
+	var property cuenta
+	var property estrategiaDeAhorro
 
-	method estaEnOrden() = not self.hayQueHacerReparaciones() && self.tieneViveresSuficientes()
+	method tieneViveresSuficientes() = porcentajeViveres > 40
 
-	method hayQueHacerReparaciones() = montoReparacion > 0
+	method hayQueHacerReparaciones() = montoReparaciones > 0
 
-	method tieneViveresSuficientes() = porcentajeViveres >= 40
+	method estaEnOrden() = !self.hayQueHacerReparaciones() && self.tieneViveresSuficientes()
 
-	method porcentajeAComprar() = estrategia.porcentajeDeEstrategiaDeAhorroPara(self)
+	method gastar(cantidad) {
+		cuenta.extraer(cantidad)
+	}
+
+	method romper(cantidad) {
+		montoReparaciones += cantidad
+	}
+
+	method mantener() {
+		estrategiaDeAhorro.hacerMantenimientoPara(self)
+	}
 
 	method comprarViveres() {
+		self.gastar(self.porcentajeAComprar() * self.calidadAComprar())
+		self.aumentarViveres()
+	}
+
+	method aumentarViveres() {
 		porcentajeViveres += self.porcentajeAComprar()
 	}
 
-	method gastar(cuanto) {
-		cuentaAsignada.extraer(cuanto)
-	}
+	method porcentajeAComprar() = estrategiaDeAhorro.porcentajeAComprarPara(self)
 
-	method mantenerCasa() {
-		self.comprarViveres()
-		cuentaAsignada.extraer(self.porcentajeAComprar() * estrategia.calidad())
-		estrategia.hacerReparacionesPara(self)
-	}
+	method calidadAComprar() = estrategiaDeAhorro.calidad()
 
-	method romperAlgoDe(cuanto) {
-		montoReparacion += cuanto
+	method dineroRestanteAlHacerReparaciones() = cuenta.saldo() - montoReparaciones
+
+	method arreglar() {
+		self.gastar(montoReparaciones)
+		montoReparaciones = 0
 	}
 
 }
@@ -64,37 +76,36 @@ object cuentaDeGastos {
 
 object cuentaCombinada {
 
-	var property cuentaPrimaria
-	var property cuentaSecundaria
-	var property saldo = 0
+	var property primaria
+	var property secundaria
 
-	method saldo() = cuentaPrimaria.saldo() + cuentaSecundaria.saldo()
+	method saldo() = primaria.saldo() + secundaria.saldo()
 
 	method depositar(cuanto) {
-		cuentaPrimaria.depositar(cuanto)
+		primaria.depositar(cuanto)
 	}
 
 	method extraer(cuanto) {
-		if (cuentaPrimaria.saldo() <= cuanto) {
-			cuentaSecundaria.extraer(cuanto)
-		} else cuentaPrimaria.extraer(cuanto)
+		if (primaria.saldo() >= cuanto) {
+			primaria.extraer(cuanto)
+		} else secundaria.extraer(cuanto)
 	}
 
 }
 
-object indispensable {
+object minimoEIndispensable {
 
 	var property calidad = 0
 
-	method porcentajeDeEstrategiaDeAhorroPara(casa) = self.porcentajeAComprarPara(casa) * calidad
-
-	method porcentajeAComprarPara(casa) = (self.porcentajeMinimoViveres() - casa.porcentajeViveres()) / calidad
-
-	method porcentajeMinimoViveres() = 40
-
-	method hacerReparacionesPara(casa) {
-	// NO TIENE COMPORTAMIENTO 
+	method hacerMantenimientoPara(casa) {
+		if (!casa.tieneViveresSuficientes()) {
+			casa.comprarViveres()
+		}
 	}
+
+	method porcentajeAComprarPara(casa) = self.porcentajeDeViveresPara(casa) * calidad
+
+	method porcentajeDeViveresPara(casa) = (40 - casa.porcentajeViveres()) / calidad
 
 }
 
@@ -102,20 +113,20 @@ object full {
 
 	const property calidad = 5
 
-	method porcentajeDeEstrategiaDeAhorroPara(casa) {
-		if (casa.estaEnOrden()) {
-			return self.porcentajeAComprarPara(casa)
-		} else return 40
+	method hacerMantenimientoPara(casa) {
+		casa.comprarViveres()
+		self.reparar(casa)
 	}
 
-	method porcentajeAComprarPara(casa) = self.porcentajeFullViveres() - casa.porcentajeViveres()
+	method porcentajeAComprarPara(casa) {
+		return if (casa.estaEnOrden()) {
+			100 - casa.porcentajeViveres()
+		} else 40
+	}
 
-	method porcentajeFullViveres() = 100
-
-	method hacerReparacionesPara(casa) {
-		if ((casa.cuentaAsignada().saldo() - casa.montoReparacion()) > 1000) {
-			casa.cuentaAsignada().extraer(casa.montoReparacion())
-			casa.montoReparacion(0)
+	method reparar(casa) {
+		if (casa.dineroRestanteAlHacerReparaciones() > 1000) {
+			casa.arreglar()
 		}
 	}
 
