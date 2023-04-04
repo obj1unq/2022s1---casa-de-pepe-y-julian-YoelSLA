@@ -17,7 +17,7 @@ describe "manteniendoLaCasa" {
 		assert.that(casaDePepeYJulian.tieneViveresSuficientes())
 	}
 
-	test "02 - Cuando la casa está en orden, usan la estrategia full, y la misma tiene el 100% de los víveres.." {
+	test "02 - Cuando la casa está en orden, usan la estrategia full, y la misma tiene el 100% de los víveres." {
 		// SetUp
 		casaDePepeYJulian.estrategia(full)
 		casaDePepeYJulian.montoReparacion(0)
@@ -29,7 +29,7 @@ describe "manteniendoLaCasa" {
 	}
 
 	test "03 - Cuando la casa no está en orden, usan la estrategia full, donde aumenta un 40% de los viveres con una calidad
-				siempre de 5" {
+				siempre de 5." {
 		// SetUp
 		casaDePepeYJulian.porcentajeViveres(10)
 		casaDePepeYJulian.estrategia(full)
@@ -41,7 +41,7 @@ describe "manteniendoLaCasa" {
 		assert.equals(50, casaDePepeYJulian.porcentajeViveres())
 	}
 
-	test "04 - Mantenimiento de casa" {
+	test "04 - Cuando se le hace un matemiento a la casa, y no alcanza para hacer las reparaciones a la misma." {
 		// SetUp
 		casaDePepeYJulian.porcentajeViveres(50)
 		casaDePepeYJulian.montoReparacion(100)
@@ -54,6 +54,22 @@ describe "manteniendoLaCasa" {
 		assert.equals(90, casaDePepeYJulian.porcentajeViveres())
 		assert.equals(800, cuentaCorriente.saldo())
 		assert.equals(100, casaDePepeYJulian.montoReparacion())
+	}
+
+	test "05 - Cuando se le hace un matemiento a la casa, y alcanza para hacer las reparaciones a la misma 
+				y sobra saldo en la cuenta." {
+		// SetUp
+		casaDePepeYJulian.porcentajeViveres(50)
+		casaDePepeYJulian.montoReparacion(500)
+		casaDePepeYJulian.cuentaAsignada(cuentaCorriente)
+		cuentaCorriente.depositar(2000)
+		casaDePepeYJulian.estrategia(full)
+		// Exercise
+		casaDePepeYJulian.mantenerCasa()
+		// Assert
+		assert.equals(90, casaDePepeYJulian.porcentajeViveres())
+		assert.equals(1300, cuentaCorriente.saldo())
+		assert.equals(0, casaDePepeYJulian.montoReparacion())
 	}
 
 }

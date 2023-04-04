@@ -2,65 +2,34 @@ object casaDePepeYJulian {
 
 	var property montoReparacion = 0
 	var property porcentajeViveres = 50
-	var property estrategia = indispensable
-	var property cuentaAsignada = cuentaCorriente
+	var property estrategia
+	var property cuentaAsignada
+
+	method estaEnOrden() = not self.hayQueHacerReparaciones() && self.tieneViveresSuficientes()
 
 	method hayQueHacerReparaciones() = montoReparacion > 0
 
 	method tieneViveresSuficientes() = porcentajeViveres >= 40
 
-	method estaEnOrden() = not self.hayQueHacerReparaciones() && self.tieneViveresSuficientes()
-
-	method porcentajeAComprar() = estrategia.estrategiaDeAhorroPara(self)
-
-	method gastar(cuanto) {
-		cuentaAsignada.extraer(cuanto)
-	}
+	method porcentajeAComprar() = estrategia.porcentajeDeEstrategiaDeAhorroPara(self)
 
 	method comprarViveres() {
 		porcentajeViveres += self.porcentajeAComprar()
 	}
 
-	method romperAlgoDe(cuanto) {
-		montoReparacion += cuanto
+	method gastar(cuanto) {
+		cuentaAsignada.extraer(cuanto)
 	}
 
 	method mantenerCasa() {
 		self.comprarViveres()
 		cuentaAsignada.extraer(self.porcentajeAComprar() * estrategia.calidad())
-		if (cuentaAsignada.saldo() + 1000 < montoReparacion) {
-			cuentaAsignada.extraer(montoReparacion)
-			montoReparacion = 0
-		}
+		estrategia.hacerReparacionesPara(self)
 	}
 
-}
-
-object indispensable {
-
-	var property calidad = 0
-
-	method porcentajeMinimoViveres() = 40
-
-	method estrategiaDeAhorroPara(casa) = self.porcentajeAComprarPara(casa) * self.calidad()
-
-	method porcentajeAComprarPara(casa) = (self.porcentajeMinimoViveres() - casa.porcentajeViveres()) / self.calidad()
-
-}
-
-object full {
-
-	const property calidad = 5
-
-	method estrategiaDeAhorroPara(casa) {
-		if (casa.estaEnOrden()) {
-			return self.porcentajeAComprarPara(casa)
-		} else return 40
+	method romperAlgoDe(cuanto) {
+		montoReparacion += cuanto
 	}
-
-	method porcentajeAComprarPara(casa) = self.porcentajeFullViveres() - casa.porcentajeViveres()
-
-	method porcentajeFullViveres() = 100
 
 }
 
@@ -95,8 +64,8 @@ object cuentaDeGastos {
 
 object cuentaCombinada {
 
-	var property cuentaPrimaria = cuentaDeGastos
-	var property cuentaSecundaria = cuentaCorriente
+	var property cuentaPrimaria
+	var property cuentaSecundaria
 	var property saldo = 0
 
 	method saldo() = cuentaPrimaria.saldo() + cuentaSecundaria.saldo()
@@ -109,6 +78,45 @@ object cuentaCombinada {
 		if (cuentaPrimaria.saldo() <= cuanto) {
 			cuentaSecundaria.extraer(cuanto)
 		} else cuentaPrimaria.extraer(cuanto)
+	}
+
+}
+
+object indispensable {
+
+	var property calidad = 0
+
+	method porcentajeDeEstrategiaDeAhorroPara(casa) = self.porcentajeAComprarPara(casa) * calidad
+
+	method porcentajeAComprarPara(casa) = (self.porcentajeMinimoViveres() - casa.porcentajeViveres()) / calidad
+
+	method porcentajeMinimoViveres() = 40
+
+	method hacerReparacionesPara(casa) {
+	// NO TIENE COMPORTAMIENTO 
+	}
+
+}
+
+object full {
+
+	const property calidad = 5
+
+	method porcentajeDeEstrategiaDeAhorroPara(casa) {
+		if (casa.estaEnOrden()) {
+			return self.porcentajeAComprarPara(casa)
+		} else return 40
+	}
+
+	method porcentajeAComprarPara(casa) = self.porcentajeFullViveres() - casa.porcentajeViveres()
+
+	method porcentajeFullViveres() = 100
+
+	method hacerReparacionesPara(casa) {
+		if ((casa.cuentaAsignada().saldo() - casa.montoReparacion()) > 1000) {
+			casa.cuentaAsignada().extraer(casa.montoReparacion())
+			casa.montoReparacion(0)
+		}
 	}
 
 }
