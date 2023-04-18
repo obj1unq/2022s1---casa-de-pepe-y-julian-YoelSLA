@@ -1,4 +1,6 @@
 import casa.*
+import estrategias.*
+import cuentas.*
 
 describe "manteniendoLaCasa" {
 
@@ -15,7 +17,7 @@ describe "manteniendoLaCasa" {
 		// Exercise
 		casaDePepeYJulian.comprarViveres()
 		// Asssert
-		assert.that(casaDePepeYJulian.tieneViveresSuficientes())
+		assert.that(casaDePepeYJulian.hayViveresSuficientes())
 	}
 
 	test "02 - Cuando la casa está en orden, usan la estrategia full, y la misma tiene el 100% de los víveres." {

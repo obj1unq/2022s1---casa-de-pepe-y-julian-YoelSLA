@@ -1,13 +1,13 @@
 import casa.*
+import cuentas.*
 
 describe "cuentasBancarias" {
 
 	method initialize() {
 		cuentaCorriente.saldo(0)
-		cuentaDeGastos.saldo(0)
-		cuentaCombinada.saldo(0)
-		cuentaCombinada.cuentaPrimaria(cuentaDeGastos)
-		cuentaCombinada.cuentaSecundaria(cuentaCorriente)
+		cuentaConGastos.saldo(0)
+		cuentaCombinada.primaria(cuentaConGastos)
+		cuentaCombinada.secundaria(cuentaCorriente)
 	}
 
 	test "01 - Cuando se deposita 100 pesos en una cuenta corriente vacía, 
@@ -41,39 +41,39 @@ describe "cuentasBancarias" {
 	test "04 - Cuando se deposita 1000 pesos en una cuenta de gastos vacía con 20 pesos 
 				de costo por operacion, su saldo es de 980 pesos." {
 		// Exercise
-		cuentaDeGastos.depositar(1000)
+		cuentaConGastos.depositar(1000)
 		// Assert
-		assert.equals(980, cuentaDeGastos.saldo())
+		assert.equals(980, cuentaConGastos.saldo())
 	}
 
 	test "05 - Cuando se extrae 980 pesos en una cuenta de gastos con 20 pesos 
 				de costo por operacion, su saldo es de 0 pesos." {
 		// SetUp
-		cuentaDeGastos.depositar(1000)
+		cuentaConGastos.depositar(1000)
 		// Exercise
-		cuentaDeGastos.extraer(980)
+		cuentaConGastos.extraer(980)
 		// Assert
-		assert.equals(0, cuentaDeGastos.saldo())
+		assert.equals(0, cuentaConGastos.saldo())
 	}
 
 	test "06 - Cuando se extrae 980 pesos en una cuenta de gastos que tiene 950 pesos 
 				con 20 pesos de costo por operacion, su saldo es de -30 pesos." {
 		// SetUp
-		cuentaDeGastos.depositar(970)
+		cuentaConGastos.depositar(970)
 		// Exercise
-		cuentaDeGastos.extraer(980)
+		cuentaConGastos.extraer(980)
 		// Assert
-		assert.equals(-30, cuentaDeGastos.saldo())
+		assert.equals(-30, cuentaConGastos.saldo())
 	}
 
 	test "07 - Cuando se deposita 100 pesos en una cuenta combinada, el saldo de 
 				la cuenta primera (cuenta de gastos) es de 50 pesos." {
 		// SetUp
-		cuentaDeGastos.costoOperacion(50)
+		cuentaConGastos.costoPorOperacion(50)
 		// Excerise
 		cuentaCombinada.depositar(100)
 		// Assert
-		assert.equals(50, cuentaDeGastos.saldo())
+		assert.equals(50, cuentaConGastos.saldo())
 	}
 
 	test "08 - Cuando se extrae 200 pesos en una cuenta combinada que no tiene suficiente
@@ -92,7 +92,7 @@ describe "cuentasBancarias" {
 				el saldo de la cuenta combinada es de 350 pesos." {
 		// SetUp
 		cuentaCorriente.depositar(500)
-		cuentaDeGastos.costoOperacion(50)
+		cuentaConGastos.costoPorOperacion(50)
 		// Exercise
 		cuentaCombinada.depositar(100)
 		cuentaCombinada.extraer(200)
@@ -102,7 +102,7 @@ describe "cuentasBancarias" {
 
 	test "10 - Cuando hay un gasto de 1000 pesos para la casa, el saldo de la cuenta corriente es de 500 pesos.." {
 		// SetUp
-		casaDePepeYJulian.cuentaAsignada(cuentaCorriente)
+		casaDePepeYJulian.cuenta(cuentaCorriente)
 		cuentaCorriente.depositar(1500)
 		// Exercise
 		casaDePepeYJulian.gastar(1000)

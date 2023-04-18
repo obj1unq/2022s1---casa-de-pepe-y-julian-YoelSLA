@@ -1,133 +1,72 @@
 object casaDePepeYJulian {
 
-	var property porcentajeViveres = 50
+	var cuenta
+	var estrategiaDeAhorro
 	var property montoReparaciones = 0
-	var property cuenta
-	var property estrategiaDeAhorro
+	var property porcentajeViveres = 50
 
-	method tieneViveresSuficientes() = porcentajeViveres > 40
+	// @public Boolean
+	method estaEnOrden() = !self.hayQueHacerReparaciones() && self.hayViveresSuficientes()
 
+	// @public Boolean
 	method hayQueHacerReparaciones() = montoReparaciones > 0
 
-	method estaEnOrden() = !self.hayQueHacerReparaciones() && self.tieneViveresSuficientes()
+	// @public Boolean
+	method hayViveresSuficientes() = porcentajeViveres > 40
 
-	method gastar(cantidad) {
-		cuenta.extraer(cantidad)
-	}
-
-	method romper(cantidad) {
-		montoReparaciones += cantidad
-	}
-
-	method mantener() {
-		estrategiaDeAhorro.hacerMantenimientoPara(self)
-	}
-
-	method comprarViveres() {
-		self.gastar(self.porcentajeAComprar() * self.calidadAComprar())
-		self.aumentarViveres()
-	}
-
-	method aumentarViveres() {
-		porcentajeViveres += self.porcentajeAComprar()
-	}
-
-	method porcentajeAComprar() = estrategiaDeAhorro.porcentajeAComprarPara(self)
-
-	method calidadAComprar() = estrategiaDeAhorro.calidad()
-
-	method dineroRestanteAlHacerReparaciones() = cuenta.saldo() - montoReparaciones
-
+	// @public void
 	method arreglar() {
 		self.gastar(montoReparaciones)
 		montoReparaciones = 0
 	}
 
-}
-
-object cuentaCorriente {
-
-	var property saldo = 0
-
-	method depositar(cuanto) {
-		saldo += cuanto
+	// @public void
+	method comprarViveres() {
+		self.gastar(self.porcentajeAComprar() * estrategiaDeAhorro.calidad())
+		self.aumentarViveres()
 	}
 
-	method extraer(cuanto) {
-		saldo -= cuanto
+	// @public void
+	method cuenta(_cuenta) {
+		cuenta = _cuenta
 	}
 
-}
-
-object cuentaDeGastos {
-
-	var property saldo = 0
-	var property costoOperacion = 20
-
-	method depositar(cuanto) {
-		saldo += cuanto - costoOperacion
+	// @public void
+	method estrategiaDeAhorro(_estrategiaDeAhorro) {
+		estrategiaDeAhorro = _estrategiaDeAhorro
 	}
 
-	method extraer(cuanto) {
-		saldo -= cuanto
+	// @public void
+	method gastar(cantidad) {
+		cuenta.extraer(cantidad)
 	}
 
-}
-
-object cuentaCombinada {
-
-	var property primaria
-	var property secundaria
-
-	method saldo() = primaria.saldo() + secundaria.saldo()
-
-	method depositar(cuanto) {
-		primaria.depositar(cuanto)
+	// @public void
+	method mantener() {
+		estrategiaDeAhorro.hacerMantenimientoPara(self)
 	}
 
-	method extraer(cuanto) {
-		if (primaria.saldo() >= cuanto) {
-			primaria.extraer(cuanto)
-		} else secundaria.extraer(cuanto)
-	}
-
-}
-
-object minimoEIndispensable {
-
-	var property calidad = 0
-
-	method hacerMantenimientoPara(casa) {
-		if (!casa.tieneViveresSuficientes()) {
-			casa.comprarViveres()
+	// @public void
+	method reparar() {
+		if (self.dineroRestanteAlHacerReparaciones() > 1000) {
+			self.arreglar()
 		}
 	}
 
-	method porcentajeAComprarPara(casa) = self.porcentajeDeViveresPara(casa) * calidad
-
-	method porcentajeDeViveresPara(casa) = (40 - casa.porcentajeViveres()) / calidad
-
-}
-
-object full {
-
-	const property calidad = 5
-
-	method hacerMantenimientoPara(casa) {
-		casa.comprarViveres()
-		self.reparar(casa)
+	// @public void
+	method romper(cantidad) {
+		montoReparaciones += cantidad
 	}
 
-	method porcentajeAComprarPara(casa) {
-		return if (casa.estaEnOrden()) {
-			100 - casa.porcentajeViveres()
-		} else 40
-	}
+	// @private Number
+	method dineroRestanteAlHacerReparaciones() = cuenta.saldo() - montoReparaciones
 
-	method reparar(casa) {
-		if (casa.dineroRestanteAlHacerReparaciones() > 1000) {
-			casa.arreglar()
-		}
+	// @private Number
+	method porcentajeAComprar() = estrategiaDeAhorro.porcentajeAComprarPara(self)
+
+	// @private void
+	method aumentarViveres() {
+		porcentajeViveres += self.porcentajeAComprar()
 	}
 
 }
